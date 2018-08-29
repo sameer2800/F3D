@@ -1354,7 +1354,7 @@ contract FoMo3Dlong is modularLong {
         
         // distribute share to affiliate
         uint256 _aff = _eth / 20;  //5 percent
-        uint256 _affParent = _eth / 33.33;  //3 percent
+        uint256 _affParent = _eth / 33;  //3 percent
         uint256 _affGrandParent = _eth / 50; //2 percent
         
         // decide what to do with affiliate share of fees
