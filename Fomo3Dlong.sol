@@ -1352,16 +1352,37 @@ contract FoMo3Dlong is modularLong {
         uint256 _long = _eth / 100;
         otherF3D_.potSwap.value(_long)();
         
+        // decide what to do with affiliate share of fees
+        // affiliate must not be self, and must have a name registered
+         if (_affID != _pID && plyr_[_affID].name != '') {
+            f3DReferral(_rID, _pID, _eth, _affID);
+        } else {
+            //if there is no affiliate, _p3d = 10% tokens
+            _p3d = _eth/ 10;
+        }
+        
+        // pay out p3d
+        _p3d = _p3d.add((_eth.mul(fees_[_team].p3d)) / (100));
+        if (_p3d > 0)
+        {
+            // deposit to divies contract
+            Divies.deposit.value(_p3d)();
+            
+            // set up event data
+            _eventData_.P3DAmount = _p3d.add(_eventData_.P3DAmount);
+        }
+        
+        return(_eventData_);
+    }
+    
+    function f3DReferral(uint256 _rID, uint256 _pID, uint256 _eth, uint256 _affID) private {
+        
         // distribute share to affiliate
-        uint256 _aff = _eth / 20;  //5 percent
+       uint256 _aff = _eth / 20;  //5 percent
         uint256 _affParent = _eth / 33;  //3 percent
         uint256 _affGrandParent = _eth / 50; //2 percent
         
-        // decide what to do with affiliate share of fees
-        // affiliate must not be self, and must have a name registered
-        if (_affID != _pID && plyr_[_affID].name != '') {
-            
-            uint256 _affParentID = plyr_[_affID].laff;
+        uint256 _affParentID = plyr_[_affID].laff;
             
             //  affiliate has a parent && must have a name registered
             if(_affParentID != 0 && plyr_[_affParentID].name != '') {
@@ -1386,23 +1407,9 @@ contract FoMo3Dlong is modularLong {
             }
             
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
+
             emit F3Devents.onAffiliatePayout(_affID, plyr_[_affID].addr, plyr_[_affID].name, _rID, _pID, plyr_[_affID].aff, now);
-        } else {
-            _p3d = _aff;
-        }
-        
-        // pay out p3d
-        _p3d = _p3d.add((_eth.mul(fees_[_team].p3d)) / (100));
-        if (_p3d > 0)
-        {
-            // deposit to divies contract
-            Divies.deposit.value(_p3d)();
-            
-            // set up event data
-            _eventData_.P3DAmount = _p3d.add(_eventData_.P3DAmount);
-        }
-        
-        return(_eventData_);
+    
     }
     
     function potSwap()
