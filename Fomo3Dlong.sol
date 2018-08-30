@@ -1369,7 +1369,7 @@ contract FoMo3Dlong is modularLong {
                 uint256 _affGrandParentID = plyr_[_affParentID].laff;
                 
                 //affiliate has a grand-parent && must have a name registered
-                if(_affGrandParentID != 0 && plyr_[_affGrandParentID] != '') {
+                if(_affGrandParentID != 0 && plyr_[_affGrandParentID].name != '') {
                     plyr_[_affGrandParentID].aff = _affGrandParent.add(plyr_[_affGrandParentID].aff);
                     emit F3Devents.onAffiliatePayout(_affGrandParentID, plyr_[_affGrandParentID].addr, plyr_[_affGrandParentID].name, _rID, _pID, plyr_[_affGrandParentID].aff, now);
                 }else {
